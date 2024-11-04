@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { DateTime } from 'luxon';
 
-import { Identifiable, Meal, MealBody } from '../types';
+import { Identifiable, Meal, MealBody } from '@/types';
 import { HttpError } from './errors/HttpError';
 
 interface ApiId {
@@ -17,33 +17,13 @@ type ApiMealContainer = {
 };
 
 const baseUrl =
-  'https://js26-na-default-rtdb.europe-west1.firebasedatabase.app/hw-66';
+  'https://js26-na-default-rtdb.europe-west1.firebasedatabase.app/hw-66/';
 
-const getMeals = async (from?: DateTime, to?: DateTime): Promise<Meal[]> => {
+const getMeals = async (): Promise<Meal[]> => {
   const endpoint = 'meals.json';
 
-  let params:
-    | {
-        orderBy?: string;
-        startAt?: number;
-        endAt?: number;
-      }
-    | undefined;
-
-  if (from) {
-    params = {
-      orderBy: 'intakeTimestamp',
-      startAt: from.toMillis(),
-    };
-
-    if (to) {
-      params.endAt = from.toMillis();
-    }
-  }
-
   const { data, status, statusText } = await axios.get<ApiMealContainer | null>(
-    new URL(endpoint, baseUrl).href,
-    { params }
+    new URL(endpoint, baseUrl).href
   );
 
   if (status !== 200) {
@@ -64,7 +44,7 @@ const getMeals = async (from?: DateTime, to?: DateTime): Promise<Meal[]> => {
   );
 };
 
-const addMeal = async (meal: Meal): Promise<Identifiable> => {
+const addMeal = async (meal: MealBody): Promise<Identifiable> => {
   const endpoint = 'meals.json';
 
   const { data, status, statusText } = await axios.post<ApiId>(
